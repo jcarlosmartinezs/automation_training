@@ -46,7 +46,7 @@ public class FlightInformationPage extends BasePage {
 		boolean valid = true;
 		StringBuilder strb = new StringBuilder();
 		
-		strb.append("Departure details: ");
+		strb.append("\nDeparture details: ");
 		
 		List<WebElement> airlineNameElements = getDriver().findElements(By.xpath(AIRLINE_NAME_LABEL_PATH));
 		String airlineName = airlineNameElements.get(0).getText();
@@ -95,7 +95,7 @@ public class FlightInformationPage extends BasePage {
 		boolean valid = true;
 		StringBuilder strb = new StringBuilder();
 		
-		strb.append("Return details: ");
+		strb.append("\nReturn details: ");
 		
 		List<WebElement> airlineNameElements = getDriver().findElements(By.xpath(AIRLINE_NAME_LABEL_PATH));
 		String airlineName = airlineNameElements.get(1).getText();
@@ -147,7 +147,11 @@ public class FlightInformationPage extends BasePage {
 		getActions().moveToElement(continueButton).perform();
 		continueButton.click();
 		
-		return new FlightCheckoutPage(getDriver());
+		FlightCheckoutPage checkoutPage = new FlightCheckoutPage(getDriver());
+		checkoutPage.setDepartureDetails(departureDetails);
+		checkoutPage.setReturnDetails(returnDetails);
+		
+		return checkoutPage;
 	}
 	
 	public FlightDetails getDepartureDetails() {

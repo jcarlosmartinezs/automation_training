@@ -18,9 +18,13 @@ public class FlightCheckoutPage extends BasePage {
 	
 	private static final Logger LOGGER = Logger.getLogger(FlightCheckoutPage.class);
 
-	private final String LOCATION_INFO_DIV_PATH = "//div[@class='location-info']";
+	private final String TRIP_SUMMARY_DIV_ID = "trip-summary";
 	
-	private final String AIRLINE_NAME_LABEL_PATH = "//div/span[@class='airline-name trim-margin']";
+	private final String FLIGHT_DETAILS_DIV_ID = "flight-details";
+	
+	private final String TRIP_SUMMARY_LINK_PATH = ".//a[contains(@class,'product-content-title')]";
+	
+	private final String AIRLINE_NAME_LABEL_CSS = "span.airline-name.trim-margin";
 	
 	private final String DEPARTURE_TIME_LABEL_PATH = "//div/span[@class='departure-time']";
 	
@@ -42,11 +46,20 @@ public class FlightCheckoutPage extends BasePage {
 		boolean valid = true;
 		StringBuilder strb = new StringBuilder();
 
-		waitUntilElementIsPresent(By.xpath(LOCATION_INFO_DIV_PATH));
+		waitUntilElementIsPresent(By.id(TRIP_SUMMARY_DIV_ID));
+		
+		WebElement summaryDiv = getDriver().findElement(By.id(TRIP_SUMMARY_DIV_ID));
+		WebElement flightDetailsLink = summaryDiv.findElement(By.xpath(TRIP_SUMMARY_LINK_PATH));
+		waitUntilElementIsClickable(flightDetailsLink);
+		flightDetailsLink.click();
+		
+		WebElement detailsDiv = getDriver().findElement(By.id(FLIGHT_DETAILS_DIV_ID));
+		waitUntilElementIsVisible(detailsDiv);
+		waitUntilElementIsPresent(By.cssSelector(AIRLINE_NAME_LABEL_CSS));
 		
 		strb.append("Flights details: ");
 		
-		List<WebElement> airlineNameElements = getDriver().findElements(By.xpath(AIRLINE_NAME_LABEL_PATH));
+		List<WebElement> airlineNameElements = getDriver().findElements(By.cssSelector(AIRLINE_NAME_LABEL_CSS));
 		String airlineName = airlineNameElements.get(0).getText();
 		strb.append("\nSelected departure airline: [").append(departureDetails.getAirlineName())
 				.append("], found in page[").append(airlineName).append("]");

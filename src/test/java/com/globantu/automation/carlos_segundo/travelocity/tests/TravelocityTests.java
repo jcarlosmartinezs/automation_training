@@ -30,7 +30,7 @@ public class TravelocityTests extends BaseTest {
 	
 	private final int DAYS_AFTER_NOW_TEST = 60;
 	
-	private final int DAYS_AFTER_DEPART_TEST = 5;
+	private final int DAYS_AFTER_DEPARTURE_TEST = 5;
 	
 	private final int ADULTS_SEATS_TEST = 1;
 	
@@ -48,7 +48,7 @@ public class TravelocityTests extends BaseTest {
 		
 		// Find flights with the given parameters
 		FlightSearchPage flightSearchPage =  homePage.findRoundFlight(
-				FROM_TEST, TO_TEST, DAYS_AFTER_NOW_TEST, DAYS_AFTER_DEPART_TEST, ADULTS_SEATS_TEST, CHILDREN_SEATS_TEST);
+				FROM_TEST, TO_TEST, DAYS_AFTER_NOW_TEST, DAYS_AFTER_DEPARTURE_TEST, ADULTS_SEATS_TEST, CHILDREN_SEATS_TEST);
 
 		FlightDetails searchDetails = flightSearchPage.getSearchDetails();
 		
@@ -81,7 +81,7 @@ public class TravelocityTests extends BaseTest {
 		assertNotNull(returnDate);
 		
 		long daysAfterDeparture = ChronoUnit.DAYS.between(departureDate, returnDate);
-		assertEquals(daysAfterDeparture, DAYS_AFTER_DEPART_TEST);
+		assertEquals(daysAfterDeparture, DAYS_AFTER_DEPARTURE_TEST);
 		
 		// Validate number of adult seats
 		int adultCount = searchDetails.getAdultSeats();
@@ -144,6 +144,7 @@ public class TravelocityTests extends BaseTest {
 		FlightCheckoutPage checkoutPage = detailsPage.continueBooking();
 		assertNotNull(checkoutPage);
 		
+		// Validate checkout information
 		validFlightDetails = checkoutPage.validateCheckoutInfo();
 		assertTrue(validFlightDetails);
 	}

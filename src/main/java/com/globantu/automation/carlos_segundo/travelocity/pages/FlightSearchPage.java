@@ -336,7 +336,7 @@ public class FlightSearchPage extends BasePage {
 			waitUntilElementIsClickable(selectButton);
 			
 			if(LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Selected flight: " + selectedFlight);
+				LOGGER.debug("\nSelected flight information: " + selectedFlight);
 			}
 			
 			selectButton.click();
