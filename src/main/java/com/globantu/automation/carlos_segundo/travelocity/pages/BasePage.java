@@ -1,6 +1,7 @@
 package com.globantu.automation.carlos_segundo.travelocity.pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -17,7 +18,7 @@ public abstract class BasePage {
 	public BasePage(WebDriver driver) {
 		PageFactory.initElements(driver, this);
 		
-		wait = new WebDriverWait(driver, 10);
+		wait = new WebDriverWait(driver, 30);
 		this.driver = driver;
 		actions = new Actions(this.driver);
 	}
@@ -40,12 +41,28 @@ public abstract class BasePage {
 		return actions;
 	}
 	
-	protected void waitUntilElementIsPresent(By byLocator) {
-		getWait().until(ExpectedConditions.presenceOfElementLocated(byLocator));
+	protected void waitUntilElementIsPresent(By byLocator, boolean ignoreTimeout) {
+		if(ignoreTimeout) {
+			getWait().ignoring(TimeoutException.class).until(ExpectedConditions.presenceOfElementLocated(byLocator));
+		}else {
+			getWait().until(ExpectedConditions.presenceOfElementLocated(byLocator));
+		}
+	}
+	
+	protected void waitUntilElementIsNotPresent(WebElement element) {
+		getWait().until(ExpectedConditions.stalenessOf(element));
 	}
 	
 	protected void waitUntilElementIsVisible(WebElement element) {
 		getWait().until(ExpectedConditions.visibilityOf(element));
+	}
+	
+	protected void waitUntilElementIsNotVisible(WebElement element, boolean ignoreTimeout) {
+		if(ignoreTimeout) {
+			getWait().ignoring(TimeoutException.class).until(ExpectedConditions.invisibilityOf(element));
+		}else {
+			getWait().until(ExpectedConditions.invisibilityOf(element));
+		}
 	}
 	
 	protected void waitUntilElementIsClickable(WebElement element) {

@@ -17,6 +17,10 @@ import com.globantu.automation.carlos_segundo.travelocity.pages.FlightCheckoutPa
 import com.globantu.automation.carlos_segundo.travelocity.pages.FlightInformationPage;
 import com.globantu.automation.carlos_segundo.travelocity.pages.FlightSearchPage;
 import com.globantu.automation.carlos_segundo.travelocity.pages.HomePage;
+import com.globantu.automation.carlos_segundo.travelocity.pages.HotelDetailsPage;
+import com.globantu.automation.carlos_segundo.travelocity.pages.HotelSearchPage;
+import com.globantu.automation.carlos_segundo.travelocity.pages.PackageCheckoutPage;
+import com.globantu.automation.carlos_segundo.travelocity.pages.PackageInformationPage;
 
 public class TravelocityTests extends BaseTest {
 
@@ -30,25 +34,39 @@ public class TravelocityTests extends BaseTest {
 	
 	private final int DAYS_AFTER_NOW_TEST = 60;
 	
-	private final int DAYS_AFTER_DEPARTURE_TEST = 5;
+	private final int TRIP_DURATION_TEST = 13;
+	
+	private final int NUMBER_OF_ROOMS_TEST = 1;
 	
 	private final int ADULTS_SEATS_TEST = 1;
 	
 	private final int CHILDREN_SEATS_TEST = 0;
 	
-	private final String RESULTS_ORDER_TEST = "Duration (Shortest)";
+	private final String FLIGHTS_RESULTS_ORDER_TEST = "Duration (Shortest)";
+	
+	private final String HOTELS_RESULTS_ORDER_TEST = "Price";
 	
 	private final int DEPARTURE_FLIGHT_OPTION_TEST = 0;
 	
-	private final int RETURNING_FLIGHT_OPTION_TEST = 2;
+	private final int RETURN_FLIGHT_OPTION_TEST = 2;
 	
-	@Test
+	private final float HOTEL_STARS_TEST = 3;
+	
+	private final int PACKAGE_HOTEL_OPTION = 0;
+	
+	private final int PACKAGE_DEPARTURE_FLIGHT_OPTION = 0;
+	
+	private final int PACKAGE_RETURN_FLIGHT_OPTION = 2;
+	
+	private final int PACKAGE_CAR_OPTION = 0;
+	
+	@Test(enabled=true)
 	public void testBookFlight() {
 		HomePage homePage = getHomePage();
 		
 		// Find flights with the given parameters
-		FlightSearchPage flightSearchPage =  homePage.findRoundFlight(
-				FROM_TEST, TO_TEST, DAYS_AFTER_NOW_TEST, DAYS_AFTER_DEPARTURE_TEST, ADULTS_SEATS_TEST, CHILDREN_SEATS_TEST);
+		FlightSearchPage flightSearchPage =  homePage.searchRoundFlight(
+				FROM_TEST, TO_TEST, DAYS_AFTER_NOW_TEST, TRIP_DURATION_TEST, ADULTS_SEATS_TEST, CHILDREN_SEATS_TEST);
 
 		FlightDetails searchDetails = flightSearchPage.getSearchDetails();
 		
@@ -81,7 +99,7 @@ public class TravelocityTests extends BaseTest {
 		assertNotNull(returnDate);
 		
 		long daysAfterDeparture = ChronoUnit.DAYS.between(departureDate, returnDate);
-		assertEquals(daysAfterDeparture, DAYS_AFTER_DEPARTURE_TEST);
+		assertEquals(daysAfterDeparture, TRIP_DURATION_TEST);
 		
 		// Validate number of adult seats
 		int adultCount = searchDetails.getAdultSeats();
@@ -95,7 +113,7 @@ public class TravelocityTests extends BaseTest {
 //		flightSearchPage.viewAllFlightsDetails();
 		
 		// Order results
-		List<String> durations = flightSearchPage.orderResultsBy(RESULTS_ORDER_TEST);
+		List<String> durations = flightSearchPage.orderResultsBy(FLIGHTS_RESULTS_ORDER_TEST);
 		
 		// Validate order of results
 		boolean validOrder = true;
@@ -128,7 +146,7 @@ public class TravelocityTests extends BaseTest {
 		assertNotNull(departFlightDetails);
 		
 		// Select returning flight
-		FlightInformationPage detailsPage = flightSearchPage.selectReturningFlight(RETURNING_FLIGHT_OPTION_TEST);
+		FlightInformationPage detailsPage = (FlightInformationPage) flightSearchPage.selectReturningFlight(RETURN_FLIGHT_OPTION_TEST, false);
 		assertNotNull(detailsPage);
 		detailsPage.setDepartureDetails(departFlightDetails);
 		
@@ -149,10 +167,104 @@ public class TravelocityTests extends BaseTest {
 		assertTrue(validFlightDetails);
 	}
 	
-//	@Test
-//	public void testBookFlightWithHotelAndCar() {
-//
-//	}
+	@Test(enabled=true)
+	public void testBookFlightWithHotelAndCar() {
+		HomePage homePage = getHomePage();
+		
+		// Find flight and hotel with the given parameters
+		HotelSearchPage hotelSearchPage =  homePage.searchRoundFlightWithHotel(
+				FROM_TEST, TO_TEST, DAYS_AFTER_NOW_TEST, TRIP_DURATION_TEST, NUMBER_OF_ROOMS_TEST, ADULTS_SEATS_TEST, CHILDREN_SEATS_TEST);
+		
+		FlightDetails searchDetails = hotelSearchPage.getSearchDetails();
+		
+		// Validate number of rooms
+		int roomCount = searchDetails.getRooms();
+		assertEquals(roomCount, NUMBER_OF_ROOMS_TEST);
+		
+		// Validate departure location
+		String departure = searchDetails.getDepartureLocation();
+		assertNotNull(departure);
+		
+		// Validate departure date
+		LocalDate departureDate = searchDetails.getDepartureDate();
+		assertNotNull(departureDate);
+		
+		LocalDate today = LocalDate.now();
+		long daysAfternow = ChronoUnit.DAYS.between(today, departureDate);
+		assertEquals(daysAfternow, DAYS_AFTER_NOW_TEST);
+		
+		// Validate return date
+		LocalDate returnDate = searchDetails.getReturningDate();
+		assertNotNull(returnDate);
+		
+		long daysAfterDeparture = ChronoUnit.DAYS.between(departureDate, returnDate);
+		assertEquals(daysAfterDeparture, TRIP_DURATION_TEST);
+		
+		// Validate number of adults
+		int adultCount = searchDetails.getAdultSeats();
+		assertEquals(adultCount, ADULTS_SEATS_TEST);
+		
+		// Validate number of children
+		int childCount = searchDetails.getChildrenSeats();
+		assertEquals(childCount, CHILDREN_SEATS_TEST);
+		
+		// Order results
+		List<String> prices = hotelSearchPage.orderResultsBy(HOTELS_RESULTS_ORDER_TEST);
+		
+		// Validate order of results
+		boolean validOrder = true;
+		float currPrice = 0f;
+		for (String strPrice : prices) {
+			float price = Float.parseFloat(strPrice.substring(1).replace(",", "").trim());
+			
+			if(LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Current price: $" + String.valueOf(currPrice)+ "; Next price: " + strPrice);
+			}
+			
+			if(price < currPrice) {
+				validOrder = false;
+				break;
+			}
+			
+			currPrice = price;
+		}
+		
+		assertTrue(validOrder);
+		
+		// Select hotel
+		HotelDetailsPage hotelDetailsPage = hotelSearchPage.selectHotel(HOTEL_STARS_TEST);
+		assertNotNull(hotelDetailsPage);
+		
+		// Validate hotel details
+		boolean validHotelDetails = hotelDetailsPage.isHotelInformationValid();
+		assertTrue(validHotelDetails);
+		
+		// Select room
+		FlightSearchPage flightPage = hotelDetailsPage.selectHotelRoom(PACKAGE_HOTEL_OPTION);
+		assertNotNull(flightPage);
+		
+		// Select departing flight
+		FlightDetails flightDetails = flightPage.selectDepartureFlight(PACKAGE_DEPARTURE_FLIGHT_OPTION);
+		
+		// Select returning flight
+		PackageInformationPage packageInformationPage = (PackageInformationPage) flightPage.selectReturningFlight(PACKAGE_RETURN_FLIGHT_OPTION, true);
+		assertNotNull(packageInformationPage);
+		packageInformationPage.setDepartureFlightDetails(flightDetails);
+		packageInformationPage.setHotelDetails(hotelDetailsPage.getHotelDetails());
+		
+		// Add a car
+		packageInformationPage.addCar(PACKAGE_CAR_OPTION);
+		
+		// Validate package information
+		boolean validPackageDetails = packageInformationPage.isPackageInformationvalid();
+		assertTrue(validPackageDetails);
+		
+		PackageCheckoutPage checkoutPage = packageInformationPage.continueBooking();
+		assertNotNull(checkoutPage);
+		
+		validPackageDetails = checkoutPage.validateCheckoutInfo();
+		assertTrue(validPackageDetails);
+	}
 //	
 //	@Test
 //	public void testSearchHotelByName() {

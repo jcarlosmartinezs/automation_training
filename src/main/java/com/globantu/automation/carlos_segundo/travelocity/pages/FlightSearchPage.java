@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -34,13 +35,15 @@ public class FlightSearchPage extends BasePage {
 	
 	private final String SELECTED_FLIGHT_ARTICLE_ID = "outboundflightModule";
 	
+	private final String PACKAGE_CONTAINER_ID = "multiItemPlaybackContainer";
+	
 	private final String CHOICE_NO_THANKS_ID = "forcedChoiceNoThanks";
 	
-	private final String FLIGHT_LIST_ITEM_TAG = "li";
+	private final String FLIGHT_LIST_ITEM_TAG = ".//li[contains(@id, 'flight-module-')]";
 	
 	private final String SORT_SELECT_PATH = "//*[@id='sortBar']//select";
 	
-	private final String FLIGHT_DETAILS_LINK_PATH = ".//a[@data-test-id='flight-details-link']";
+	private final String FLIGHT_DETAILS_LINK_PATH = ".//span[@class='details-holder']/a";
 	
 	private final String FLIGHT_DETAILS_DIV_PATH = "./../../div[@class='flight-details']";
 
@@ -139,7 +142,7 @@ public class FlightSearchPage extends BasePage {
 	 * @return
 	 */
 	public int getAdultSeats() {
-		waitUntilElementIsPresent(By.id(ADULT_COUNT_SELECT_ID));
+		waitUntilElementIsPresent(By.id(ADULT_COUNT_SELECT_ID), true);
 		String result = getSelectedElementValue(adultCountSelect);
 		
 		if(LOGGER.isDebugEnabled()) {
@@ -154,7 +157,7 @@ public class FlightSearchPage extends BasePage {
 	 * @return
 	 */
 	public int getChildrenSeats() {
-		waitUntilElementIsPresent(By.id(CHILD_COUNT_SELECT_ID));
+		waitUntilElementIsPresent(By.id(CHILD_COUNT_SELECT_ID), true);
 		String result = getSelectedElementValue(childCountSelect);
 		
 		if(LOGGER.isDebugEnabled()) {
@@ -235,7 +238,7 @@ public class FlightSearchPage extends BasePage {
 	 * @return a List of String with the duration of the ordered results (TODO: Should return the resulting list of flights details)
 	 */
 	public List<String> orderResultsBy(String orderText) {
-		waitUntilElementIsPresent(By.xpath(SORT_SELECT_PATH));
+		waitUntilElementIsPresent(By.xpath(SORT_SELECT_PATH), true);
 		
 		WebElement sortSelect = getDriver().findElement(By.xpath(SORT_SELECT_PATH));
 		waitUntilElementIsClickable(sortSelect);
@@ -263,25 +266,49 @@ public class FlightSearchPage extends BasePage {
 	 * @param flightOption The option in the flight list results to select. The options start in 0, for the first flight.
 	 * @return The {@link FlightInformationPage} of the selected flights.
 	 */
-	public FlightInformationPage selectReturningFlight(int flightOption) {
-		waitUntilElementIsPresent(By.id(SELECTED_FLIGHT_ARTICLE_ID));
+	public BasePage selectReturningFlight(int flightOption, boolean isFlightAndHotelPackage) {
+		BasePage detailsPage = null;
+		
+		if(!isFlightAndHotelPackage) {
+			waitUntilElementIsPresent(By.id(SELECTED_FLIGHT_ARTICLE_ID), true);
 
-		String mainWindowHandle = getDriver().getWindowHandle();
-		FlightDetails returnDetails = selectFlight(flightOption);
-		
-		waitUntilElementIsPresent(By.id(CHOICE_NO_THANKS_ID));
-		WebElement noThanksLink = getDriver().findElement(By.id(CHOICE_NO_THANKS_ID));
-		waitUntilElementIsClickable(noThanksLink);
-		noThanksLink.click();
-		
-		FlightInformationPage detailsPage = new FlightInformationPage(getDriver());
-		detailsPage.setReturnDetails(returnDetails);
-		
-		for(String windowHandle : getDriver().getWindowHandles()) {
-			if(!windowHandle.equals(mainWindowHandle)) {
-				getDriver().switchTo().window(windowHandle);
-				break;
+			String mainWindowHandle = getDriver().getWindowHandle();
+			FlightDetails returnDetails = selectFlight(flightOption);
+			
+			try {
+				waitUntilElementIsPresent(By.id(CHOICE_NO_THANKS_ID), false);
+				WebElement noThanksLink = getDriver().findElement(By.id(CHOICE_NO_THANKS_ID));
+				waitUntilElementIsClickable(noThanksLink);
+				noThanksLink.click();
+			}catch(TimeoutException e) {
+				LOGGER.error("No optional offer shown...");
 			}
+			
+			detailsPage = new FlightInformationPage(getDriver());
+			((FlightInformationPage) detailsPage).setReturnDetails(returnDetails);
+			
+			for(String windowHandle : getDriver().getWindowHandles()) {
+				if(!windowHandle.equals(mainWindowHandle)) {
+					getDriver().switchTo().window(windowHandle);
+					break;
+				}
+			}
+		}else {
+			waitUntilElementIsPresent(By.id(PACKAGE_CONTAINER_ID), true);
+
+			FlightDetails returnDetails = selectFlight(flightOption);
+			
+			try {
+				waitUntilElementIsPresent(By.id(CHOICE_NO_THANKS_ID), false);
+				WebElement noThanksLink = getDriver().findElement(By.id(CHOICE_NO_THANKS_ID));
+				waitUntilElementIsClickable(noThanksLink);
+				noThanksLink.click();
+			}catch(TimeoutException e) {
+				LOGGER.error("No optional offer shown...");
+			}
+			
+			detailsPage = new PackageInformationPage(getDriver());
+			((PackageInformationPage) detailsPage).setReturnFlightDetails(returnDetails);
 		}
 		
 		return detailsPage;
@@ -297,11 +324,22 @@ public class FlightSearchPage extends BasePage {
 		
 		try {
 			selectedFlight = new FlightDetails();
+			LOGGER.info("Select flight, option: " + flightOption);
 			
+			waitUntilElementIsPresent(By.id(FLIGHT_LIST_ID), true);
 			WebElement flightsList = getDriver().findElement(By.id(FLIGHT_LIST_ID));
-			List<WebElement> flights = flightsList.findElements(By.tagName(FLIGHT_LIST_ITEM_TAG));
-			WebElement selectedElement = flights.get(flightOption);
+			waitUntilElementIsVisible(flightsList);
 			
+			waitUntilElementIsPresent(By.xpath(SORT_SELECT_PATH), true);
+			
+			WebElement sortSelect = getDriver().findElement(By.xpath(SORT_SELECT_PATH));
+			waitUntilElementIsClickable(sortSelect);
+			
+			List<WebElement> flights = flightsList.findElements(By.xpath(FLIGHT_LIST_ITEM_TAG));
+			WebElement selectedElement = flights.get(flightOption);
+			getActions().moveToElement(selectedElement).perform();
+			
+			waitUntilElementIsVisible(selectedElement);
 			WebElement detailsLink = selectedElement.findElement(By.xpath(FLIGHT_DETAILS_LINK_PATH));
 			detailsLink.click();
 
@@ -340,7 +378,7 @@ public class FlightSearchPage extends BasePage {
 			}
 			
 			selectButton.click();
-			getWait().until(ExpectedConditions.or(
+			getWait().ignoring(TimeoutException.class).until(ExpectedConditions.or(
 					ExpectedConditions.stalenessOf(flightDetailsDiv), 
 					ExpectedConditions.presenceOfElementLocated(By.id(CHOICE_NO_THANKS_ID))));
 		}catch(NoSuchElementException e) {

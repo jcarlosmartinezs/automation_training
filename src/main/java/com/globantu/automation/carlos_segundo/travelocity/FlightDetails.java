@@ -17,6 +17,8 @@ public class FlightDetails {
 	
 	private int childrenSeats;
 	
+	private int rooms;
+	
 	private String departureTime;
 	
 	private String arrivalTime;
@@ -135,12 +137,21 @@ public class FlightDetails {
 		this.childrenSeats = childrenSeats;
 	}
 
+	public int getRooms() {
+		return rooms;
+	}
+
+	public void setRooms(int rooms) {
+		this.rooms = rooms;
+	}
+	
 	public String toString() {
 		StringBuilder str = new StringBuilder();
 		str.append("\ndepartureLocation: ").append(departureLocation);
 		str.append("\narrivalLocation: ").append(arrivalLocation);
 		str.append("\ndepartureDate: ").append(departureDate);
 		str.append("\nreturningDate: ").append(returningDate);
+		str.append("\nrooms: ").append(rooms);
 		str.append("\nadultSeats: ").append(adultSeats);
 		str.append("\nchildrenSeats: ").append(childrenSeats);
 		str.append("\ndepartureTime: ").append(departureTime);
@@ -153,5 +164,5 @@ public class FlightDetails {
 		
 		return str.toString();
 	}
-	
+
 }

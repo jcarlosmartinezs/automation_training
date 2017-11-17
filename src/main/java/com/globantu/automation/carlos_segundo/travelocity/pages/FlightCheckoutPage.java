@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 
 import com.globantu.automation.carlos_segundo.travelocity.FlightDetails;
@@ -34,6 +35,10 @@ public class FlightCheckoutPage extends BasePage {
 	
 	private final String ARRIVAL_AIRPORT_LABEL_PATH = "//div/span[@class='arrival-airport-codes']";
 	
+	private final String PROMPT_MODAL_ID = "air-delayed-prompt-modal-id";
+	
+	private final String PROMPT_MODAL_CLOSE_BUTTON_ID = "modalCloseButton";
+	
 	private FlightDetails departureDetails;
 	
 	private FlightDetails returnDetails;
@@ -46,16 +51,28 @@ public class FlightCheckoutPage extends BasePage {
 		boolean valid = true;
 		StringBuilder strb = new StringBuilder();
 
-		waitUntilElementIsPresent(By.id(TRIP_SUMMARY_DIV_ID));
+		waitUntilElementIsPresent(By.id(TRIP_SUMMARY_DIV_ID), true);
 		
 		WebElement summaryDiv = getDriver().findElement(By.id(TRIP_SUMMARY_DIV_ID));
 		WebElement flightDetailsLink = summaryDiv.findElement(By.xpath(TRIP_SUMMARY_LINK_PATH));
+		
 		waitUntilElementIsClickable(flightDetailsLink);
-		flightDetailsLink.click();
+		try {
+			flightDetailsLink.click();
+		}catch(WebDriverException e ) {
+			WebElement modal = getDriver().findElement(By.id(PROMPT_MODAL_ID));
+			if(modal.isDisplayed()) {
+				WebElement closeModalBtn = getDriver().findElement(By.id(PROMPT_MODAL_CLOSE_BUTTON_ID));
+				closeModalBtn.click();
+			}
+
+			waitUntilElementIsClickable(flightDetailsLink);
+			flightDetailsLink.click();
+		}
 		
 		WebElement detailsDiv = getDriver().findElement(By.id(FLIGHT_DETAILS_DIV_ID));
 		waitUntilElementIsVisible(detailsDiv);
-		waitUntilElementIsPresent(By.cssSelector(AIRLINE_NAME_LABEL_CSS));
+		waitUntilElementIsPresent(By.cssSelector(AIRLINE_NAME_LABEL_CSS), true);
 		
 		strb.append("Flights details: ");
 		
@@ -140,5 +157,5 @@ public class FlightCheckoutPage extends BasePage {
 	public void setReturnDetails(FlightDetails returnDetails) {
 		this.returnDetails = returnDetails;
 	}
-	
+
 }

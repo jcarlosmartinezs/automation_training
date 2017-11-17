@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -17,46 +18,87 @@ public class HomePage extends BasePage {
 
 	private final String PAGE_URL = "http://www.travelocity.com/";
 	
+	private final String CALENDAR_PREV_BUTTON_PATH = ".//button[contains(@class,'datepicker-paging datepicker-prev')]";
+	
 	private final String CALENDAR_NEXT_BUTTON_PATH = ".//button[contains(@class,'datepicker-paging datepicker-next')]";
 	
 	private final String SELECTED_DATE_PATH = ".//button[@data-year='%s' and @data-month='%s' and @data-day='%s']";
 
-	private final String DEPARTING_CALENDAR_ID = "flight-departing-wrapper-hp-flight";
+	private final String FLIGHT_DEPARTING_CALENDAR_ID = "flight-departing-wrapper-hp-flight";
 	
-	private final String RETURNING_CALENDAR_ID = "flight-returning-wrapper-hp-flight";
+	private final String FLIGHT_RETURNING_CALENDAR_ID = "flight-returning-wrapper-hp-flight";
+	
+	private final String PACKAGE_DEPARTING_CALENDAR_ID = "package-departing-wrapper-hp-package";
+	
+	private final String PACKAGE_RETURNING_CALENDAR_ID = "package-returning-wrapper-hp-package";
+	
+	private final String FLIGHT_AND_HOTEL_OPTION_PATH = "//*[@data-gcw-sub-nav-option-name='flight-hotel']/..";
 	
 	@FindBy(id="tab-flight-tab-hp")
 	private WebElement flightsButton;
+	
+	@FindBy(id="tab-package-tab-hp")
+	private WebElement flightAndHotelButton;
 	
 	@FindBy(id="flight-type-roundtrip-label-hp-flight")
 	private WebElement roundtripButton;
 	
 	@FindBy(id="flight-origin-hp-flight")
-	private WebElement originInput;
+	private WebElement flightOriginInput;
 	
 	@FindBy(id="flight-destination-hp-flight")
-	private WebElement destinationInput;
+	private WebElement flightDestinationInput;
+	
+	@FindBy(id="package-origin-hp-package")
+	private WebElement packageOriginInput;
+	
+	@FindBy(id="package-destination-hp-package")
+	private WebElement packageDestinationInput;
 	
 	@FindBy(id="flight-departing-hp-flight")
-	private WebElement departingDateInput;
+	private WebElement flightDepartingDateInput;
 	
 	@FindBy(id="flight-returning-hp-flight")
-	private WebElement returningDateInput;
+	private WebElement flightReturningDateInput;
 	
-	@FindBy(id=DEPARTING_CALENDAR_ID)
-	private WebElement departingCalendar;
+	@FindBy(id="package-departing-hp-package")
+	private WebElement packageDepartingDateInput;
 	
-	@FindBy(id=RETURNING_CALENDAR_ID)
-	private WebElement returningCalendar;
+	@FindBy(id="package-returning-hp-package")
+	private WebElement packageReturningDateInput;
+	
+	@FindBy(id=FLIGHT_DEPARTING_CALENDAR_ID)
+	private WebElement flightDepartingCalendar;
+	
+	@FindBy(id=FLIGHT_RETURNING_CALENDAR_ID)
+	private WebElement flightReturningCalendar;
+	
+	@FindBy(id=PACKAGE_DEPARTING_CALENDAR_ID)
+	private WebElement packageDepartingCalendar;
+	
+	@FindBy(id=PACKAGE_RETURNING_CALENDAR_ID)
+	private WebElement packageReturningCalendar;
+	
+	@FindBy(id="package-rooms-hp-package")
+	private WebElement roomsSelect;
 	
 	@FindBy(id="flight-adults-hp-flight")
-	private WebElement adultsSelect;
+	private WebElement flightAdultsSelect;
+	
+	@FindBy(id="package-1-adults-hp-package")
+	private WebElement packageAdultSelect;
 	
 	@FindBy(id="flight-children-hp-flight")
-	private WebElement childrenSelect;
+	private WebElement flightChildrenSelect;
+	
+	@FindBy(id="package-1-children-hp-package")
+	private WebElement packageChildrenSelect;
 	
 	@FindBy(xpath="//form[@id='gcw-flights-form-hp-flight']//button[@type='submit']")
-	private WebElement searchButton;
+	private WebElement flightSearchButton;
+	
+	@FindBy(id="search-button-hp-package")
+	private WebElement packageSearchButton;
 	
 	public HomePage(WebDriver driver) {
 		super(driver);
@@ -68,14 +110,14 @@ public class HomePage extends BasePage {
 	 * 
 	 * @param from The origin
 	 * @param to The destination
-	 * @param departDaysFromNow Number of days after current date for the departure
-	 * @param returnDaysFromDepart Number of days after departure for the return
+	 * @param departureDaysFromNow Number of days after current date for the departure
+	 * @param durationDays Number of days after departure for the return
 	 * @param adults Number of adult seats
 	 * @param children Number of children seats
 	 * @return a {@link FlightSearchPage}
 	 */
-	public FlightSearchPage findRoundFlight(String from, String to, 
-			int departDaysFromNow, int returnDaysFromDepart, int adults, int children) {
+	public FlightSearchPage searchRoundFlight(String from, String to, 
+			int departureDaysFromNow, int durationDays, int adults, int children) {
 		
 		waitUntilElementIsClickable(flightsButton);
 		flightsButton.click();
@@ -83,46 +125,116 @@ public class HomePage extends BasePage {
 		waitUntilElementIsClickable(roundtripButton);
 		roundtripButton.click();
 		
-		waitUntilElementIsClickable(originInput);
-		originInput.sendKeys(from);
+		waitUntilElementIsClickable(flightOriginInput);
+		flightOriginInput.sendKeys(from);
 		
-		waitUntilElementIsClickable(destinationInput);
-		destinationInput.sendKeys(to);
+		waitUntilElementIsClickable(flightDestinationInput);
+		flightDestinationInput.sendKeys(to);
 
-		Date departDate = selectDepartDate(departDaysFromNow);
-		selectReturnDate(departDate, returnDaysFromDepart);
+		waitUntilElementIsClickable(flightDepartingDateInput);
+		flightDepartingDateInput.clear();
+		flightDepartingDateInput.click();
+		selectDate(flightDepartingCalendar, departureDaysFromNow);
+
+		int daysFromNowToReturn = departureDaysFromNow + durationDays;
+		waitUntilElementIsClickable(flightReturningDateInput);
+		flightReturningDateInput.clear();
+		flightReturningDateInput.click();
+		selectDate(flightReturningCalendar, daysFromNowToReturn);
 		
-		selectElementByText(adultsSelect, Integer.toString(adults));
-		selectElementByText(childrenSelect, Integer.toString(children));
+		selectElementByText(flightAdultsSelect, Integer.toString(adults));
+		selectElementByText(flightChildrenSelect, Integer.toString(children));
 		
-		waitUntilElementIsClickable(searchButton);
-		searchButton.click();
+		waitUntilElementIsClickable(flightSearchButton);
+		flightSearchButton.click();
 		
 		return new FlightSearchPage(getDriver());
 	}
 	
 	/**
-	 * Selects the depart date in this page
-	 * @param departDaysFromNow Number of days after current date for the depart date
-	 * @return a {@link Date} representing the selected depart date
+	 * Finds a flight and hotel with the given parameters
+	 * 
+	 * @param from The origin
+	 * @param to The destination
+	 * @param departDaysFromNow Number of days after current date for the departure
+	 * @param durationDays Number of days after departure for the return
+	 * @param rooms Number of rooms
+	 * @param adults Number of adult seats
+	 * @param children Number of children seats
+	 * @return a {@link FlightSearchPage}
 	 */
-	private Date selectDepartDate(int departDaysFromNow) {
-		waitUntilElementIsClickable(departingDateInput);
-		departingDateInput.click();
+	public HotelSearchPage searchRoundFlightWithHotel(String from, String to, 
+			int departureDaysFromNow, int durationDays, int rooms, int adults, int children) {
 		
-		waitUntilElementIsVisible(departingCalendar);
+		waitUntilElementIsClickable(flightAndHotelButton);
+		flightAndHotelButton.click();
+		
+		WebElement flightAndHotelOption = getDriver().findElement(By.xpath(FLIGHT_AND_HOTEL_OPTION_PATH));
+		waitUntilElementIsClickable(flightAndHotelOption);
+		flightAndHotelOption.click();
+		
+		waitUntilElementIsClickable(packageOriginInput);
+		packageOriginInput.sendKeys(from);
+		
+		waitUntilElementIsClickable(packageDestinationInput);
+		packageDestinationInput.sendKeys(to);
+
+		waitUntilElementIsClickable(packageDepartingDateInput);
+		packageDepartingDateInput.clear();
+		packageDepartingDateInput.click();
+		selectDate(packageDepartingCalendar, departureDaysFromNow);
+		
+		int daysFromNowToReturn = departureDaysFromNow + durationDays;
+		waitUntilElementIsClickable(packageReturningDateInput);
+		packageReturningDateInput.clear();
+		packageReturningDateInput.click();
+		selectDate(packageReturningCalendar, daysFromNowToReturn);
+		
+		selectElementByText(roomsSelect, Integer.toString(rooms));
+		selectElementByText(packageAdultSelect, Integer.toString(adults));
+		selectElementByText(packageChildrenSelect, Integer.toString(children));
+		
+		waitUntilElementIsClickable(packageSearchButton);
+		packageSearchButton.click();
+		
+		return new HotelSearchPage(getDriver());
+	}
+	
+	/**
+	 * Selects a date in the given calendar
+	 * @param daysAfterNow Number of days after current date, the calculated date will be the selected
+	 * @return a {@link Date} representing the selected date
+	 */
+	private Date selectDate(WebElement calendar, int daysAfterNow) {
+		waitUntilElementIsVisible(calendar);
 
 		Calendar startCalendar = Calendar.getInstance();
 		startCalendar.setTime(new Date());
 		
 		Calendar endCalendar = Calendar.getInstance();
 		endCalendar.setTime(new Date());
-		endCalendar.add(Calendar.DAY_OF_MONTH, departDaysFromNow);
+		endCalendar.add(Calendar.DAY_OF_MONTH, daysAfterNow);
 
 		int diffYear = endCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
 		int diffMonth = diffYear * 12 + endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
-
-		WebElement nextMonthBtn = departingCalendar.findElement(By.xpath(CALENDAR_NEXT_BUTTON_PATH));
+		boolean firstMonth = false;
+		
+		// Go to the firs page first
+		do {
+			try {
+				WebElement prevMonth = calendar.findElement(By.xpath(CALENDAR_PREV_BUTTON_PATH));
+				if(prevMonth.isDisplayed()) {
+					prevMonth.click();
+				}else {
+					firstMonth = true;
+				}
+			}catch(NoSuchElementException e) {
+				firstMonth = true;
+			}
+			
+		}while(!firstMonth);
+		
+		WebElement nextMonthBtn = calendar.findElement(By.xpath(CALENDAR_NEXT_BUTTON_PATH));
 		for (int i = 1; i < diffMonth; i++) {
 			nextMonthBtn.click();			
 		}
@@ -132,47 +244,10 @@ public class HomePage extends BasePage {
 		int departDay = endCalendar.get(Calendar.DAY_OF_MONTH);
 				
 		String selectedDatePath = String.format(SELECTED_DATE_PATH, departYear, departMonth, departDay);
-		WebElement selectedDateBtn = departingCalendar.findElement(By.xpath(selectedDatePath));
+		WebElement selectedDateBtn = calendar.findElement(By.xpath(selectedDatePath));
 		selectedDateBtn.click();
 		
 		return endCalendar.getTime();
 	}
 	
-	/**
-	 * Selects the return date in this page
-	 * @param departDate The depart date
-	 * @param departDaysFromNow Number of days after the depart date for the return date
-	 * @return a {@link Date} representing the selected return date
-	 */
-	private Date selectReturnDate(Date departDate, int returnDaysFromDepart) {
-		waitUntilElementIsClickable(returningDateInput);
-		returningDateInput.click();
-		
-		waitUntilElementIsVisible(returningCalendar);
-
-		Calendar startCalendar = Calendar.getInstance();
-		startCalendar.setTime(new Date());
-		
-		Calendar endCalendar = Calendar.getInstance();
-		endCalendar.setTime(departDate);
-		endCalendar.add(Calendar.DAY_OF_MONTH, returnDaysFromDepart);
-
-		int diffYear = endCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
-		int diffMonth = diffYear * 12 + endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
-
-		WebElement nextMonthBtn = returningCalendar.findElement(By.xpath(CALENDAR_NEXT_BUTTON_PATH));
-		for (int i = 1; i < diffMonth; i++) {
-			nextMonthBtn.click();			
-		}
-		
-		int departYear = endCalendar.get(Calendar.YEAR);
-		int departMonth = endCalendar.get(Calendar.MONTH);
-		int departDay = endCalendar.get(Calendar.DAY_OF_MONTH);
-				
-		String selectedDatePath = String.format(SELECTED_DATE_PATH, departYear, departMonth, departDay);
-		WebElement selectedDateBtn = returningCalendar.findElement(By.xpath(selectedDatePath));
-		selectedDateBtn.click();
-		
-		return endCalendar.getTime();
-	}
 }
