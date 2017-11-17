@@ -165,6 +165,8 @@ public class TravelocityTests extends BaseTest {
 		// Validate checkout information
 		validFlightDetails = checkoutPage.validateCheckoutInfo();
 		assertTrue(validFlightDetails);
+		
+		checkoutPage.closeCurrentTab();
 	}
 	
 	@Test(enabled=true)

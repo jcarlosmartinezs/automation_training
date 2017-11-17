@@ -1,6 +1,8 @@
 package com.globantu.automation.carlos_segundo.travelocity.pages;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
@@ -142,6 +144,15 @@ public class FlightCheckoutPage extends BasePage {
 		return valid;
 	}
 
+	public void closeCurrentTab() {
+		Set<String> windowHandles = getDriver().getWindowHandles();
+		List<String> handles = new ArrayList<>(windowHandles);
+		
+		getDriver().switchTo().window(handles.get(1));
+		getDriver().close();
+		getDriver().switchTo().window(handles.get(0));
+	}
+	
 	public FlightDetails getDepartureDetails() {
 		return departureDetails;
 	}

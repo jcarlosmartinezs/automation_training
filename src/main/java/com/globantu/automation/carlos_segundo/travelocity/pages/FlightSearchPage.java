@@ -278,6 +278,7 @@ public class FlightSearchPage extends BasePage {
 			try {
 				waitUntilElementIsPresent(By.id(CHOICE_NO_THANKS_ID), false);
 				WebElement noThanksLink = getDriver().findElement(By.id(CHOICE_NO_THANKS_ID));
+				waitUntilElementIsVisible(noThanksLink);
 				waitUntilElementIsClickable(noThanksLink);
 				noThanksLink.click();
 			}catch(TimeoutException e) {

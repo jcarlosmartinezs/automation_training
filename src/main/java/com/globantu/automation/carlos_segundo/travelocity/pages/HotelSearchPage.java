@@ -80,6 +80,7 @@ public class HotelSearchPage extends BasePage {
 	public FlightDetails getSearchDetails() {
 		FlightDetails flightDetails = new FlightDetails();
 		
+		waitUntilElementIsPresent(LOADING_MASK_SELECTOR, true);
 		WebElement loadingMask = getDriver().findElement(LOADING_MASK_SELECTOR);
 		waitUntilElementIsNotVisible(loadingMask, true);
 		
