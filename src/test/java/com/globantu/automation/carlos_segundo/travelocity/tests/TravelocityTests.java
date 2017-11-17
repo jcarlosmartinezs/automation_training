@@ -26,6 +26,9 @@ public class TravelocityTests extends BaseTest {
 
 	private static final Logger LOGGER = Logger.getLogger(TravelocityTests.class);
 	
+	
+	// TODO: Move to DataProvider
+	
 	private final String LOCATIONS_PATTERN = "(%s)";
 	
 	private final String FROM_TEST = "LAS";
