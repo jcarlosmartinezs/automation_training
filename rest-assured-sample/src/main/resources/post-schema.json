@@ -1,0 +1,20 @@
+{
+	"$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Post",
+    "type": "object",
+    "required": ["id","userId","title"],
+    "properties": {
+    	"id": {
+    		"type": "number"
+    	},
+    	"userId": {
+    		"type": "number"
+    	},
+        "title": {
+        	"type": "string"
+        },
+        "body": {
+        	"type": "string"
+        }
+    }
+}

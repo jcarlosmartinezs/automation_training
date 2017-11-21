@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+
+<suite name="Training test suite">
+	<parameter name="browser" value="CHROME" />
+	<parameter name="driverLocation" value="drivers/chromedriver.exe" />
+	<parameter name="menuElements" value="COFFEE,TEA,MENU,COFFEEHOUSE,SOCIAL IMPACT,CARD,BLOG" />
+	<test name="Starbucks test">
+		<classes>
+			<class name="com.automation.training.starbucks.tests.StarbucksTests"></class>
+		</classes>
+	</test>
+</suite>

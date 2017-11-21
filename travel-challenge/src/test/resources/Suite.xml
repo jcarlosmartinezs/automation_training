@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+
+<suite name="Training test suite">
+	<parameter name="browser" value="CHROME" />
+	<parameter name="driverLocation" value="drivers/chromedriver.exe" />
+	<test name="Travelocity test">
+		<classes>
+			<class name="com.globantu.automation.carlos_segundo.travelocity.tests.TravelocityTests"></class>
+		</classes>
+	</test>
+</suite>
