@@ -1,2 +1,2 @@
-# travel_challenge
-This project is part of the testing automation training
+# Training projects
+Projects developed for the testing automation training.
