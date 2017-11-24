@@ -3,6 +3,7 @@ package com.globantu.automation.carlos_segundo.travelocity.pages;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
@@ -15,6 +16,8 @@ import org.openqa.selenium.support.FindBy;
  *
  */
 public class HomePage extends BasePage {
+	
+	private static final Logger LOGGER = Logger.getLogger(FlightInformationPage.class);
 
 	private final String PAGE_URL = "http://www.travelocity.com/";
 	
@@ -206,6 +209,7 @@ public class HomePage extends BasePage {
 	 * @return a {@link Date} representing the selected date
 	 */
 	private Date selectDate(WebElement calendar, int daysAfterNow) {
+		Date selectedDate = null;
 		waitUntilElementIsVisible(calendar);
 
 		Calendar startCalendar = Calendar.getInstance();
@@ -215,11 +219,9 @@ public class HomePage extends BasePage {
 		endCalendar.setTime(new Date());
 		endCalendar.add(Calendar.DAY_OF_MONTH, daysAfterNow);
 
-		int diffYear = endCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
-		int diffMonth = diffYear * 12 + endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
 		boolean firstMonth = false;
 		
-		// Go to the firs page first
+		// Go to the first page first
 		do {
 			try {
 				WebElement prevMonth = calendar.findElement(By.xpath(CALENDAR_PREV_BUTTON_PATH));
@@ -235,21 +237,37 @@ public class HomePage extends BasePage {
 			
 		}while(!firstMonth);
 		
-		WebElement nextMonthBtn = calendar.findElement(By.xpath(CALENDAR_NEXT_BUTTON_PATH));
-		for (int i = 1; i < diffMonth; i++) {
-			waitUntilElementIsClickable(nextMonthBtn);
-			nextMonthBtn.click();			
-		}
-		
 		int departYear = endCalendar.get(Calendar.YEAR);
 		int departMonth = endCalendar.get(Calendar.MONTH);
 		int departDay = endCalendar.get(Calendar.DAY_OF_MONTH);
 				
 		String selectedDatePath = String.format(SELECTED_DATE_PATH, departYear, departMonth, departDay);
-		WebElement selectedDateBtn = calendar.findElement(By.xpath(selectedDatePath));
-		selectedDateBtn.click();
+		WebElement selectedDateBtn = null;
+		boolean noDatesAvailable = false;
 		
-		return endCalendar.getTime();
+		// Validate if current page contains the required date
+		do {
+			try {
+				selectedDateBtn = calendar.findElement(By.xpath(selectedDatePath));
+			}catch(NoSuchElementException e) {
+				try {
+					WebElement nextMonthBtn = calendar.findElement(By.xpath(CALENDAR_NEXT_BUTTON_PATH));
+					waitUntilElementIsClickable(nextMonthBtn);
+					nextMonthBtn.click();
+				}catch(NoSuchElementException ex) {
+					LOGGER.error("Required date " + daysAfterNow + " is not available");
+					noDatesAvailable = true;
+				}
+			}
+			
+		}while(selectedDateBtn == null && !noDatesAvailable);
+		
+		if(selectedDateBtn != null) {
+			selectedDateBtn.click();
+			selectedDate = endCalendar.getTime();
+		}
+		
+		return selectedDate;
 	}
 	
 }

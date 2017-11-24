@@ -43,25 +43,25 @@ public class FlightSearchPage extends BasePage {
 	
 	private final String SORT_SELECT_PATH = "//*[@id='sortBar']//select";
 	
-	private final String FLIGHT_DETAILS_LINK_PATH = ".//span[@class='details-holder']/a";
+	private final String FLIGHT_DETAILS_LINK_PATH = ".//span[contains(@class,'details-holder')]/a";
 	
-	private final String FLIGHT_DETAILS_DIV_PATH = "./../../div[@class='flight-details']";
+	private final String FLIGHT_DETAILS_DIV_PATH = "//div[@class='flight-details']";
 
 	private final String FLIGHT_DEPARTURE_TIME_PATH = ".//span[@data-test-id='departure-time']";
 	
 	private final String FLIGHT_ARRIVAL_TIME_PATH = ".//span[@data-test-id='arrival-time']";
 	
-	private final String FLIGHT_AIRLINE_NAME_PATH = ".//div[@data-test-id='airline-name']";
+	private final String FLIGHT_AIRLINE_NAME_PATH = ".//*[@data-test-id='airline-name']";
 	
-	private final String FLIGHT_DURATION_PATH = ".//div[@data-test-id='duration']";
+	private final String FLIGHT_DURATION_PATH = ".//*[@data-test-id='duration']";
 	
-	private final String FLIGHT_AIRPORTS_PATH = ".//div[@data-test-id='airports']";
+	private final String FLIGHT_AIRPORTS_PATH = ".//*[@class='flight-info']";
 	
-	private final String FLIGHT_NUM_STOPS_PATH = ".//div[@data-test-num-stops]";
+	private final String FLIGHT_NUM_STOPS_PATH = ".//*[@data-test-num-stops]";
 	
 	private final String FLIGHT_NUM_STOPS_ATTRIBUTE = "data-test-num-stops";
 	
-	private final String FLIGHT_PRICE_PER_TRAVELER_PATH = ".//div[@data-test-price-per-traveler]";
+	private final String FLIGHT_PRICE_PER_TRAVELER_PATH = ".//*[@data-test-price-per-traveler]";
 	
 	private final String FLIGHT_PRICE_PER_TRAVELER_ATTRIBUTE = "data-test-price-per-traveler";
 	
@@ -344,13 +344,16 @@ public class FlightSearchPage extends BasePage {
 			WebElement detailsLink = selectedElement.findElement(By.xpath(FLIGHT_DETAILS_LINK_PATH));
 			detailsLink.click();
 
+			waitUntilElementIsPresent(By.xpath(FLIGHT_DETAILS_DIV_PATH), true);
 			WebElement flightDetailsDiv = detailsLink.findElement(By.xpath(FLIGHT_DETAILS_DIV_PATH));
-			waitUntilElementIsVisible(flightDetailsDiv);
-			getActions().moveToElement(flightDetailsDiv).perform();
 			
 			WebElement infoElement = selectedElement.findElement(By.xpath(FLIGHT_AIRLINE_NAME_PATH));
 			selectedFlight.setAirlineName(infoElement.getText());
 			
+			String elementPath = selectedElement.getAttribute("id");
+			elementPath = "//*[@id='" + elementPath + "']" + FLIGHT_AIRPORTS_PATH.substring(1);
+			LOGGER.info("Airports element path: " + elementPath);
+			waitUntilElementIsPresent(By.xpath(elementPath), true);
 			infoElement = selectedElement.findElement(By.xpath(FLIGHT_AIRPORTS_PATH));
 			selectedFlight.setAirports(infoElement.getText());
 			

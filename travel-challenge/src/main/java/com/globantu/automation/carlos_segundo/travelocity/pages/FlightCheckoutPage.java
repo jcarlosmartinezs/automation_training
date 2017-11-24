@@ -80,62 +80,62 @@ public class FlightCheckoutPage extends BasePage {
 		
 		List<WebElement> airlineNameElements = getDriver().findElements(By.cssSelector(AIRLINE_NAME_LABEL_CSS));
 		String airlineName = airlineNameElements.get(0).getText();
+		valid = valid && airlineName.contains(departureDetails.getAirlineName());
 		strb.append("\nSelected departure airline: [").append(departureDetails.getAirlineName())
-				.append("], found in page[").append(airlineName).append("]");
-		valid = valid && departureDetails.getAirlineName().equalsIgnoreCase(airlineName);
+				.append("], found in page[").append(airlineName).append("], valid :: ").append(valid);
 		
 		airlineName = airlineNameElements.get(1).getText();
+		valid = valid && airlineName.contains(returnDetails.getAirlineName());
 		strb.append("\nSelected return airline: [").append(returnDetails.getAirlineName())
-				.append("], found in page[").append(airlineName).append("]");
-		valid = valid && returnDetails.getAirlineName().equalsIgnoreCase(airlineName);
+				.append("], found in page[").append(airlineName).append("], valid :: ").append(valid);
 		
 		List<WebElement> departureTimeElements = getDriver().findElements(By.xpath(DEPARTURE_TIME_LABEL_PATH));
 		String departureTime = departureTimeElements.get(0).getText();
-		strb.append("\nSelected departure departure time: [").append(departureDetails.getDepartureTime())
-				.append("], found in page[").append(departureTime).append("]");
 		valid = valid && departureDetails.getDepartureTime().equalsIgnoreCase(departureTime);
+		strb.append("\nSelected departure departure time: [").append(departureDetails.getDepartureTime())
+				.append("], found in page[").append(departureTime).append("], valid :: ").append(valid);
 		
 		departureTime = departureTimeElements.get(1).getText();
-		strb.append("\nSelected return departure time: [").append(returnDetails.getDepartureTime())
-				.append("], found in page[").append(departureTime).append("]");
 		valid = valid && returnDetails.getDepartureTime().equalsIgnoreCase(departureTime);
+		strb.append("\nSelected return departure time: [").append(returnDetails.getDepartureTime())
+				.append("], found in page[").append(departureTime).append("], valid :: ").append(valid);
 		
 		List<WebElement> arrivalTimeElements = getDriver().findElements(By.xpath(ARRIVAL_TIME_LABEL_PATH));
 		String arrivalTime = arrivalTimeElements.get(0).getText();
-		strb.append("\nSelected departure arrival time: [").append(departureDetails.getArrivalTime())
-				.append("], found in page[").append(arrivalTime).append("]");
 		valid = valid && departureDetails.getArrivalTime().equalsIgnoreCase(arrivalTime);
+		strb.append("\nSelected departure arrival time: [").append(departureDetails.getArrivalTime())
+				.append("], found in page[").append(arrivalTime).append("], valid :: ").append(valid);
 		
 		arrivalTime = arrivalTimeElements.get(1).getText();
-		strb.append("\nSelected return arrival time: [").append(returnDetails.getArrivalTime())
-				.append("], found in page[").append(arrivalTime).append("]");
 		valid = valid && returnDetails.getArrivalTime().equalsIgnoreCase(arrivalTime);
+		strb.append("\nSelected return arrival time: [").append(returnDetails.getArrivalTime())
+				.append("], found in page[").append(arrivalTime).append("], valid :: ").append(valid);
 		
 		String[] airports = departureDetails.getAirports().split("-");
 		
 		List<WebElement> departureAirportElements = getDriver().findElements(By.xpath(DEPARTURE_AIRPORT_LABEL_PATH));
 		String departureAirport = departureAirportElements.get(0).getText();
+		valid = valid && airports[0].trim().contains(departureAirport);
 		strb.append("\nSelected departure departure airport: [").append(airports[0].trim())
-				.append("], found in page[").append(departureAirport).append("]");
-		valid = valid && airports[0].trim().equalsIgnoreCase(departureAirport);
+				.append("], found in page[").append(departureAirport).append("], valid :: ").append(valid);
 		
 		List<WebElement> arrivalAirportElements = getDriver().findElements(By.xpath(ARRIVAL_AIRPORT_LABEL_PATH));
 		String arrivalAirport = arrivalAirportElements.get(0).getText();
+		valid = valid && airports[1].trim().contains(arrivalAirport);
 		strb.append("\nSelected departure arrival airport: [").append(airports[1].trim())
-				.append("], found in page[").append(arrivalAirport).append("]");
-		valid = valid && airports[1].trim().equalsIgnoreCase(arrivalAirport);
+				.append("], found in page[").append(arrivalAirport).append("], valid :: ").append(valid);
 		
 		airports = returnDetails.getAirports().split("-");
 		
 		departureAirport = departureAirportElements.get(1).getText();
+		valid = valid && airports[0].trim().contains(departureAirport);
 		strb.append("\nSelected return departure airport: [").append(airports[0].trim())
-				.append("], found in page[").append(departureAirport).append("]");
-		valid = valid && airports[0].trim().equalsIgnoreCase(departureAirport);
+				.append("], found in page[").append(departureAirport).append("], valid :: ").append(valid);
 		
 		arrivalAirport = arrivalAirportElements.get(1).getText();
+		valid = valid && airports[1].trim().contains(arrivalAirport);
 		strb.append("\nSelected return arrival airport: [").append(airports[1].trim())
-				.append("], found in page[").append(arrivalAirport).append("]");
-		valid = valid && airports[1].trim().equalsIgnoreCase(arrivalAirport);
+				.append("], found in page[").append(arrivalAirport).append("], valid :: ").append(valid);
 		
 		if(LOGGER.isDebugEnabled()) {
 			LOGGER.debug(strb.toString());

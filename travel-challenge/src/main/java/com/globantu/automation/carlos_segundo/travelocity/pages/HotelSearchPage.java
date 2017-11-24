@@ -215,16 +215,18 @@ public class HotelSearchPage extends BasePage {
 		// FIXME
 		String[] dateElems = value.split("/");
 		if(dateElems[0].length() == 1) {
-			value = "0" + dateElems[0] + "/" + dateElems[1] + "/" + dateElems[2];
+			dateElems[0] = "0" + dateElems[0];
 		}
 		
 		if(dateElems[1].length() == 1) {
-			value = dateElems[0] + "/0" + dateElems[1] + "/" + dateElems[2];
+			dateElems[1] = "0" + dateElems[1];
 		}
 		
 		if(dateElems[2].length() == 1) {
-			value = dateElems[0] + "/" + dateElems[1] + "/0" + dateElems[2];
+			dateElems[2] = "0" + dateElems[2];
 		}
+		
+		value = dateElems[0] + "/" + dateElems[1] + "/" + dateElems[2];
 		
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format);
 		LocalDate departureDate = null;
@@ -256,16 +258,18 @@ public class HotelSearchPage extends BasePage {
 		// FIXME
 		String[] dateElems = value.split("/");
 		if(dateElems[0].length() == 1) {
-			value = "0" + dateElems[0] + "/" + dateElems[1] + "/" + dateElems[2];
+			dateElems[0] = "0" + dateElems[0];
 		}
 		
 		if(dateElems[1].length() == 1) {
-			value = dateElems[0] + "/0" + dateElems[1] + "/" + dateElems[2];
+			dateElems[1] = "0" + dateElems[1];
 		}
 		
 		if(dateElems[2].length() == 1) {
-			value = dateElems[0] + "/" + dateElems[1] + "/0" + dateElems[2];
+			dateElems[2] = "0" + dateElems[2];
 		}
+		
+		value = dateElems[0] + "/" + dateElems[1] + "/" + dateElems[2];
 		
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format);
 		LocalDate returnDate = null;

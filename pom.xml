@@ -55,5 +55,6 @@
 		<module>starbucks-challenge</module>
 		<module>travel-challenge</module>
 		<module>rest-assured-sample</module>
+		<module>appium-sample</module>
 	</modules>
 </project>
