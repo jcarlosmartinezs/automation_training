@@ -1,7 +1,7 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 
-<suite name="Training rest-assured test suite">
-	<parameter name="parametersFile" value="src/test/resources/test.properties"></parameter>
+<suite name="Appium training test suite">
+	<parameter name="parametersFile" value="src/test/resources/test1.properties"></parameter>
 	<test name="Appium test">
 		<classes>
 			<class name="com.automation.training.appium.tests.AppiumTests"></class>

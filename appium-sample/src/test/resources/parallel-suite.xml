@@ -1,0 +1,16 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+
+<suite name="Appium training test suite" thread-count="2" parallel="tests" >
+	<test name="Appium test 1">
+		<parameter name="parametersFile" value="src/test/resources/test1.properties"></parameter>
+		<classes>
+			<class name="com.automation.training.appium.tests.AppiumTests"></class>
+		</classes>
+	</test>
+	<test name="Appium test 2">
+		<parameter name="parametersFile" value="src/test/resources/test2.properties"></parameter>
+		<classes>
+			<class name="com.automation.training.appium.tests.AppiumTests"></class>
+		</classes>
+	</test>
+</suite>

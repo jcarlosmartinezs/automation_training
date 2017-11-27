@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 
-<suite name="Training rest-assured test suite">
+<suite name="Rest-assured training test suite">
 	<parameter name="baseUrl" value="https://jsonplaceholder.typicode.com"></parameter>
 	<parameter name="configFile" value="post-test-parameters.csv"></parameter>
 	<test name="Posts test">

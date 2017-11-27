@@ -15,6 +15,27 @@
 		<java.version>1.8</java.version>
 	</properties>
 
+	<profiles>
+		<profile>
+			<id>single</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<testType>single</testType>
+			</properties>
+		</profile>
+		<profile>
+			<id>parallel</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<testType>parallel</testType>
+			</properties>
+		</profile>
+	</profiles>
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -37,7 +58,7 @@
 				<version>2.20.1</version>
 				<configuration>
 					<suiteXmlFiles>
-						<file>src/test/resources/suite.xml</file>
+						<file>src/test/resources/${testType}-suite.xml</file>
 					</suiteXmlFiles>
 				</configuration>
 				<dependencies>

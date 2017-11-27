@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 
-<suite name="Training test suite">
+<suite name="Travel challenge training test suite">
 	<parameter name="browser" value="CHROME" />
 	<parameter name="driverLocation" value="drivers/chromedriver.exe" />
 	<test name="Travelocity test">

@@ -4,9 +4,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.testng.annotations.AfterSuite;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Parameters;
 
 import com.automation.training.appium.AndroidAppDriver;
@@ -31,7 +30,7 @@ public class BaseTest {
 	
 	private StartPage startPage;
 
-	@BeforeSuite(alwaysRun = true)
+	@BeforeMethod(alwaysRun = true)
 	@Parameters({"parametersFile"})
 	public void setUp(String parametersFile) throws IOException {
 		this.testParameters = new Properties();
@@ -43,23 +42,14 @@ public class BaseTest {
 				.withAppPackage(testParameters.getProperty(APP_PACKAGE_PARAMETER_NAME))
 				.withStartActivity(testParameters.getProperty(START_ACTIVITY_PARAMETER_NAME))
 				.build();
-	}
-
-	@BeforeMethod
-	public void getHome() {
-//		driver.startActivity(testParameters.getProperty(APP_PACKAGE_PARAMETER_NAME), 
-//				testParameters.getProperty(START_ACTIVITY_PARAMETER_NAME));
-//		
-//		driver.startActivity("com.twitter.android", "com.twitter.app.onboarding.signup.SignUpSplashActivity");
-		
 		startPage = new StartPage(driver.getDriver());
 	}
-	
+
 	public StartPage getStartPage() {
 		return startPage;
 	}
 	
-	@AfterSuite(alwaysRun = true)
+	@AfterMethod(alwaysRun = true)
 	public void tearDown() {
 		driver.dispose();
 	}

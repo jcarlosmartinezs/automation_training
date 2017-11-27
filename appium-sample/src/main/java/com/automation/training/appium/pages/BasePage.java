@@ -118,7 +118,7 @@ public abstract class BasePage {
 		 
 		//Sets FluentWait Setup
 		FluentWait<RemoteWebDriver> fwait = new FluentWait<RemoteWebDriver>(driver)
-		        .withTimeout(3, TimeUnit.SECONDS)
+		        .withTimeout(2, TimeUnit.SECONDS)
 		        .pollingEvery(500, TimeUnit.MILLISECONDS)
 		        .ignoring(NoSuchElementException.class)
 		        .ignoring(TimeoutException.class);

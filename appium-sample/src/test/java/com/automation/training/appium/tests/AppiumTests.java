@@ -27,23 +27,47 @@ public class AppiumTests extends BaseTest {
 	private final int ABOUT_ELEMENTS_COUNT = 6;
 	
 	@Test
-	public void testApi() throws InterruptedException {
+	public void testLogin() throws InterruptedException {
 		StartPage startPage = getStartPage();
+		
+		LOGGER.info("Test login...");
 		
 		LoginPage loginPage = startPage.startLogin();
 		loginPage.login(EXISTING_USERNAME, EXISTING_PASSWORD);
+	}
+	
+	@Test
+	public void testViewTermsOfService() throws InterruptedException {
+		StartPage startPage = getStartPage();
 		
+		LOGGER.info("Test view terms of service...");
+		
+		LoginPage loginPage = startPage.startLogin();
 		AboutPage aboutPage = loginPage.getAboutPage();
 		List<MobileElement> menuElements = aboutPage.getMenuElements();
 		assertEquals(menuElements.size(), ABOUT_ELEMENTS_COUNT);
 		
 		TermsOfServicePage tosPage = aboutPage.viewTermsOfService();
-		tosPage.scrollDown(1000);
+		tosPage.scrollDown(500);
 		tosPage.goBack();
+	}
+	
+	@Test
+	public void testViewPrivacyAndLegalNotices() throws InterruptedException {
+		StartPage startPage = getStartPage();
+		
+		LOGGER.info("Test view privacy policy...");
+		
+		LoginPage loginPage = startPage.startLogin();
+		AboutPage aboutPage = loginPage.getAboutPage();
+		List<MobileElement> menuElements = aboutPage.getMenuElements();
+		assertEquals(menuElements.size(), ABOUT_ELEMENTS_COUNT);
 		
 		PrivacyPolicyPage ppPage = aboutPage.viewPrivacyPolicy();
 		ppPage.scrollDown(1000);
 		ppPage.goBack();
+		
+		LOGGER.info("Test view legal notices...");
 		
 		LegalNoticesPage lnPage = aboutPage.viewLegalNotices();
 		lnPage.scrollDown(1000);

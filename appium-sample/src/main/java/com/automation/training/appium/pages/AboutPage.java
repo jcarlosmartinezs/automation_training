@@ -50,7 +50,7 @@ public class AboutPage extends BasePage {
 		
 		// Sets FluentWait Setup
 		fluentWait = new FluentWait<RemoteWebDriver>(getDriver())
-		        .withTimeout(5, TimeUnit.SECONDS)
+		        .withTimeout(2, TimeUnit.SECONDS)
 		        .pollingEvery(500, TimeUnit.MILLISECONDS)
 		        .ignoring(NoSuchElementException.class)
 		        .ignoring(TimeoutException.class);
