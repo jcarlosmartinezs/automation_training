@@ -5,6 +5,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import io.appium.java_client.AppiumDriver;
@@ -21,6 +24,8 @@ import io.appium.java_client.remote.MobilePlatform;
  *
  */
 public class AndroidAppDriver {
+	private static final Logger LOGGER = Logger.getLogger(AndroidAppDriver.class);
+
 	private AppiumDriver<MobileElement> driver;
 	
 	private AndroidAppDriver(URL appiumUrl, String deviceName, String appFile, 
@@ -52,6 +57,23 @@ public class AndroidAppDriver {
 	 */
 	public void startActivity(String appPackage, String activity) {
 		((AndroidDriver<MobileElement>) driver).startActivity(new Activity(appPackage, activity));
+	}
+	
+	/**
+	 * Takes a screenshot of the current session.
+	 * @return a file of the screenshot taken.
+	 */
+	public File takeScreenshot() {
+		File screenshot = null;
+		LOGGER.info("Screenshot requested");
+		
+		try {
+            screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+        } catch(Exception e) {
+            LOGGER.error("Unable to take screenshot: " + e.getMessage(), e);
+        }
+		
+		return screenshot;
 	}
 	
 	public void dispose() {
@@ -90,6 +112,15 @@ public class AndroidAppDriver {
 		}
 		
 		public AndroidAppDriver build() throws IllegalArgumentException {
+			StringBuffer sb = new StringBuffer("Create new android session with parameters: ");
+			sb.append("appiumUrl[").append(appiumUrl).append("], ");
+			sb.append("device[").append(device).append("], ");
+			sb.append("appFile[").append(appFile).append("], ");
+			sb.append("appPackage[").append(appPackage).append("], ");
+			sb.append("startActivity[").append(startActivity).append("]");
+			
+			LOGGER.info(sb.toString());
+			
 			if(StringUtils.isBlank(appFile) || StringUtils.isBlank(device) || 
 					StringUtils.isBlank(appPackage) || StringUtils.isBlank(startActivity)) {
 				throw new IllegalArgumentException("Device, AppFile, AppPackage and StartActivity are required");

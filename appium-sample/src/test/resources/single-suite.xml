@@ -1,7 +1,11 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 
-<suite name="Appium training test suite">
+<suite name="Appium training test suite" configfailurepolicy="continue">
 	<parameter name="parametersFile" value="src/test/resources/test1.properties"></parameter>
+	<listeners>
+		<listener class-name="com.automation.training.appium.listener.ExtentReporter" />
+		<listener class-name="com.automation.training.appium.listener.TestResultListenerAdapter" />
+	</listeners>
 	<test name="Appium test">
 		<classes>
 			<class name="com.automation.training.appium.tests.AppiumTests"></class>

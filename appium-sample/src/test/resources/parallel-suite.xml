@@ -1,6 +1,10 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 
-<suite name="Appium training test suite" thread-count="2" parallel="tests" >
+<suite name="Appium training test suite" configfailurepolicy="continue" thread-count="2" parallel="tests" >
+	<listeners>
+		<listener class-name="com.automation.training.appium.listener.ExtentReporter" />
+		<listener class-name="com.automation.training.appium.listener.TestResultListenerAdapter" />
+    </listeners>
 	<test name="Appium test 1">
 		<parameter name="parametersFile" value="src/test/resources/test1.properties"></parameter>
 		<classes>

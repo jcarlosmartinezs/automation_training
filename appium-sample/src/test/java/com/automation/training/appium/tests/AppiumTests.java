@@ -26,7 +26,7 @@ public class AppiumTests extends BaseTest {
 	
 	private final int ABOUT_ELEMENTS_COUNT = 6;
 	
-	@Test
+	@Test(description="Test login")
 	public void testLogin() throws InterruptedException {
 		StartPage startPage = getStartPage();
 		
@@ -34,9 +34,11 @@ public class AppiumTests extends BaseTest {
 		
 		LoginPage loginPage = startPage.startLogin();
 		loginPage.login(EXISTING_USERNAME, EXISTING_PASSWORD);
+		
+		assertEquals(true, false);
 	}
 	
-	@Test
+	@Test(description="Test view terms of service")
 	public void testViewTermsOfService() throws InterruptedException {
 		StartPage startPage = getStartPage();
 		
@@ -52,7 +54,7 @@ public class AppiumTests extends BaseTest {
 		tosPage.goBack();
 	}
 	
-	@Test
+	@Test(description="Test view privacy policy and legal notices")
 	public void testViewPrivacyAndLegalNotices() throws InterruptedException {
 		StartPage startPage = getStartPage();
 		

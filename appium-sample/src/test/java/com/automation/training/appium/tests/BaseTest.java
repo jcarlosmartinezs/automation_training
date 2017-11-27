@@ -1,5 +1,6 @@
 package com.automation.training.appium.tests;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
@@ -47,6 +48,10 @@ public class BaseTest {
 
 	public StartPage getStartPage() {
 		return startPage;
+	}
+	
+	public File takeScreenshot() {
+		return driver.takeScreenshot();
 	}
 	
 	@AfterMethod(alwaysRun = true)
